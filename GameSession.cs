@@ -42,6 +42,7 @@ namespace con_rogue
         private GUI gui;
         public static ConsoleKeyInfo Input;
         public static int menuChoice;
+        private static int itemChoice;
 
 
         public GameSession()
@@ -69,6 +70,7 @@ namespace con_rogue
 
 
             CurrentPlayer.WeaponInventory.Add(ItemFactory.CreateWeapon(2001));
+            CurrentPlayer.WeaponInventory.Add(ItemFactory.CreateWeapon(2002));
             CurrentPlayer.ItemInventory.Add(ItemFactory.CreateItem(1001));
 
             CurrentPlayer.CurrentWeapon = CurrentPlayer.WeaponInventory.First();
@@ -84,20 +86,50 @@ namespace con_rogue
             // Inventory window logic
             if (gui.GetInventoryWindowState())
             {
-                // Open Misc Tab
-                if (input.KeyChar == action.GetKeybind("misc_tab"))
+                if (!gui.GetItemSelectedState())
                 {
-                    gui.MiscVisibility(true);
-                }
-                // Open Weapons Tab
-                if (input.KeyChar == action.GetKeybind("weapons_tab"))
+                    // Open Misc Tab
+                    if (input.KeyChar == action.GetKeybind("misc_tab"))
+                    {
+                        gui.MiscVisibility(true);
+                    }
+                    // Open Weapons Tab
+                    if (input.KeyChar == action.GetKeybind("weapons_tab"))
+                    {
+                        gui.WeaponsVisibility(true);
+                    }
+                    // Close Inventory
+                    if (input.KeyChar == action.GetKeybind("exit"))
+                    {
+                        gui.CloseInventoryWindow();
+                    }
+                    // Open specific item option menu
+                    if (char.IsDigit(input.KeyChar))
+                    {
+                        itemChoice = 0;
+                        itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
+                        for (int i = 0; i < CurrentPlayer.WeaponInventory.Count; i++)
+                        {
+                            if (itemChoice == i)
+                            {
+                                gui.OpenItemSelected();
+                            }
+                        }
+                    }
+
+                } else
                 {
-                    gui.WeaponsVisibility(true);
-                }
-                // Close Inventory
-                if (input.KeyChar == action.GetKeybind("exit"))
-                {
-                    gui.CloseInventoryWindow();
+                    // Equip selected weapon
+                    if(input.KeyChar == action.GetKeybind("equip"))
+                    {
+                        CurrentPlayer.CurrentWeapon = CurrentPlayer.WeaponInventory[itemChoice];
+                        gui.CloseItemSelected();
+                    }
+                    // Close specific item option menu
+                    if (input.KeyChar == action.GetKeybind("cancel"))
+                    {
+                        gui.CloseItemSelected();
+                    }
                 }
             }
 
@@ -127,20 +159,8 @@ namespace con_rogue
                 }
 
             }
-            // Battle
-            if (InCombat)
-            {
-                if (input.KeyChar == battleAction.GetKeybind("attack") && battleAction.GetActionState("attack"))
-                {
-                    Attack();
-                }
-                if(input.KeyChar == action.GetKeybind("exit"))
-                {
-                    InCombat = false;
-                }
-            }
 
-            // Location specific
+            // Location specific 
             if(CurrentLocation.X == 1)
             {
                 if (input.KeyChar == action.GetKeybind("blacksmith") && action.GetActionState("blacksmith"))
@@ -155,12 +175,31 @@ namespace con_rogue
 
             if (CurrentLocation.X == 2)
             {
-                if(input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt"))
+                if(input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt") && InCombat != true)
                 {
                     GetEnemyAtLocation();
                     InCombat = true;
                 }
             }
+
+            // Battle system
+            if (InCombat)
+            {
+                if (input.KeyChar == battleAction.GetKeybind("attack") && battleAction.GetActionState("attack") && CurrentEnemy.Health > 0)
+                {
+                    Attack();
+                }
+                if (input.KeyChar == action.GetKeybind("exit") && CurrentEnemy.Health <= 0)
+                {
+                    if (CurrentEnemy.Health <= 0)
+                    {
+                        InCombat = false;
+                    }
+                }
+
+            }
+
+
 
             // Redraw
             gui.Render(this);

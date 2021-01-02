@@ -21,6 +21,7 @@ namespace con_rogue
         // Lazy bools for inventory
         private bool miscTab = false;
         private bool weaponsTab = false;
+        private bool itemSelected = false;
 
         public GUI()
         {
@@ -74,7 +75,7 @@ namespace con_rogue
                 }
                 else
                 {
-                    DrawInventory(gameSession.CurrentPlayer, invY, invH);
+                    DrawInventory(gameSession.CurrentPlayer, gameSession.action, invY, invH);
                 }
 
                 if (travelWindow)
@@ -207,64 +208,7 @@ namespace con_rogue
                 action.AutoVisibility("hunt", !GetInventoryWindowState() && !GetTravelWindowState());
                 action.AutoVisibility("gather", !GetInventoryWindowState() && !GetTravelWindowState());
             }
-            /*
-            // If only AutoVisible worked...
-            // Lazy implementation too (not-so lazy... quite a lot of spaghetti making to do in the future here)
-            if (mainWindow)
-            {
-                action.MakeVisible("travel");
-                action.MakeVisible("inventory");
-            }
-            if (!mainWindow)
-            {
-                action.MakeHidden("travel");
-                action.MakeHidden("inventory");
-                action.MakeHidden("blacksmith");
-                action.MakeHidden("market");
-                action.MakeHidden("hunt");
-                action.MakeHidden("gather");
-            }
-
-            if (travelWindow)
-            {
-                action.MakeVisible("exit");
-            }
-            if (!travelWindow)
-            {
-                action.MakeHidden("exit");
-            }
-
-            if (inventoryWindow)
-            {
-                action.MakeVisible("misc_tab");
-                action.MakeVisible("weapons_tab");
-                action.MakeVisible("exit");
-            }
-            if (!inventoryWindow)
-            {
-                action.MakeHidden("misc_tab");
-                action.MakeHidden("weapons_tab");
-                if (!travelWindow)
-                {
-                    action.MakeHidden("exit");
-                }
-            }
-
-            // Automate this eventually
-            if (loc.X == 1 && mainWindow == true)
-            {
-                action.MakeVisible("blacksmith");
-                action.MakeVisible("market");
-            }
-
-            if (loc.X == 2 && mainWindow == true)
-            {
-                action.MakeVisible("hunt");
-                action.MakeVisible("gather");
-            }
-            */
-
-
+        
         }
 
         public void DrawActions(Action action)
@@ -273,7 +217,7 @@ namespace con_rogue
             action.PrintActions(Width - 29, 0);
         }
 
-        public void DrawInventory(Player player, int y, int height)
+        public void DrawInventory(Player player, Action action, int y, int height)
         {
             // can probably be improved upon
             DrawBox(0, y, Width - 30, height, " INVENTORY ", false, false);
@@ -284,6 +228,11 @@ namespace con_rogue
             if (weaponsTab)
             {
                 player.PrintWeapons(2, y);
+            }
+            if (itemSelected)
+            {
+                DrawBox(0, y + height, 20, 5, null, false, false);
+                player.PrintItemOptions(2, y + height, action);
             }
         }
 
@@ -371,6 +320,18 @@ namespace con_rogue
         public bool GetInventoryWindowState()
         {
             return inventoryWindow;
+        }
+        public void OpenItemSelected()
+        {
+            itemSelected = true;
+        }
+        public void CloseItemSelected()
+        {
+            itemSelected = false;
+        }
+        public bool GetItemSelectedState()
+        {
+            return itemSelected;
         }
         public void OpenMainWindow()
         {

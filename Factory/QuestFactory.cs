@@ -18,7 +18,7 @@ namespace con_rogue.Factory
             rewardItems.Add(new ItemBundle(2003, 1));
 
             // Create the quest
-            _quests.Add(new Quest(1, "Spider Trouble", "Obtain 5 spider silk", itemsToComplete, 20, 10, rewardItems));
+            _quests.Add(new Quest(1, "Spider Trouble", "Obtain 2 spider silk", itemsToComplete, 20, 10, rewardItems));
         }
 
         // Get the first matching quest by passed ID

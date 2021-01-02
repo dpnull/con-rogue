@@ -56,8 +56,10 @@ namespace con_rogue
 
             int runningTotal = 0;
 
+            // Get to understand this more...
             foreach (EnemyEncounter enemyEncounter in EnemiesHere)
             {
+                runningTotal += enemyEncounter.EncounterChance;
                 if (random <= runningTotal)
                 {
                     return EnemyFactory.CreateEnemy(enemyEncounter.EnemyID);

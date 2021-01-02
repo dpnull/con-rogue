@@ -12,6 +12,7 @@ namespace con_rogue.Factory
 
             action.AddAction("travel", 't', "Travel", true);
             action.AddAction("exit", 'x', "Exit", false);
+            action.AddAction("cancel", 'c', "Cancel", false);
             action.AddAction("blacksmith", 'b', "Blacksmith", false);
             action.AddAction("market", 'm', "Market", false);
             action.AddAction("inventory", 'i', "Inventory", true);
@@ -20,6 +21,10 @@ namespace con_rogue.Factory
             action.AddAction("hunt", 'h', "Hunt", false);
             action.AddAction("gather", 'g', "Gather", false);
             action.AddAction("attack", 'a', "Attack", false);
+
+            // Inventory
+            action.AddAction("equip", 'e', "Equip", false);
+            action.AddAction("drop", 'd', "Drop", false);
 
             return action;
         }

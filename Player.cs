@@ -103,8 +103,21 @@ namespace con_rogue
             {
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine("{0}) {1}   [ ${2} ]", i, ItemInventory[i].Name, ItemInventory[i].Price);
+                Console.WriteLine("{0}) {1}   [ ${2} ]", i + 1, ItemInventory[i].Name, ItemInventory[i].Price);
             }
+        }
+
+        public void PrintItemOptions(int x, int y, Action action)
+        {
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"{action.GetKeybind("equip")}) Equip");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"{action.GetKeybind("drop")}) Drop");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
         }
 
         public void AddWeaponToInventory(Weapon weapon)

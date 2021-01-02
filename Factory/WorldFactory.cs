@@ -21,6 +21,7 @@ namespace con_rogue.Factory
 
             world.AddLocation(2, 0, "Forest", "Thick forest with lively ecosystem.");
             world.GetLocation(2, 0).AddEnemy(1, 50);
+            world.GetLocation(2, 0).AddEnemy(2, 50);
 
             return world;
         }

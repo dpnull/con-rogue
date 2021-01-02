@@ -23,6 +23,7 @@ namespace con_rogue.Factory
 
             _standardItems.Add(new Item(3001, "Spider Silk", "Useful in alchemy and threading.", 4));
             _standardItems.Add(new Item(3002, "Spider Eye", "Used for its properties when brewed.", 8));
+            _standardItems.Add(new Item(3003, "Boar skin", "Local standard for clothes quality.", 10));
 
         }
 

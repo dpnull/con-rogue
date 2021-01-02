@@ -19,6 +19,12 @@ namespace con_rogue.Factory
 
                     return spider;
 
+                case 2:
+                    Enemy boar = new Enemy("Boar", 50, 50, 3, 6, RNG.Generator(2, 7), RNG.Generator(4, 9));
+
+                    AddLootItem(boar, 3003, 100);
+
+                    return boar;
 
                 default:
                     // add throw exception
