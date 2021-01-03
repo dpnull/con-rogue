@@ -14,15 +14,15 @@ namespace con_rogue.Factory
                 case 1:
                     Enemy spider = new Enemy("Spider", 30, 30, 5, 10, RNG.Generator(3, 6), RNG.Generator(5, 8));
 
-                    AddLootItem(spider, 3001, 50);
-                    AddLootItem(spider, 3002, 50);
+                    AddLootItem(spider, 1001, 50);
+                    AddLootItem(spider, 1002, 50);
 
                     return spider;
 
                 case 2:
                     Enemy boar = new Enemy("Boar", 50, 50, 3, 6, RNG.Generator(2, 7), RNG.Generator(4, 9));
 
-                    AddLootItem(boar, 3003, 100);
+                    AddLootItem(boar, 1003, 100);
 
                     return boar;
 
@@ -38,7 +38,7 @@ namespace con_rogue.Factory
         {
             if (RNG.Generator(1, 100) <= percentage)
             {
-                enemy.Inventory.Add(new ItemBundle(itemID, 1));
+                enemy.AddItemToInventory(ItemFactory.CreateItem(itemID));
             }
         }
     }

@@ -42,7 +42,7 @@ namespace con_rogue
         private GUI gui;
         public static ConsoleKeyInfo Input;
         public static int menuChoice;
-        private static int itemChoice;
+        public static int itemChoice;
 
 
         public GameSession()
@@ -69,11 +69,10 @@ namespace con_rogue
             battleAction = actionFactory.CreateBattleAction();
 
 
-            CurrentPlayer.WeaponInventory.Add(ItemFactory.CreateWeapon(2001));
-            CurrentPlayer.WeaponInventory.Add(ItemFactory.CreateWeapon(2002));
-            CurrentPlayer.ItemInventory.Add(ItemFactory.CreateItem(1001));
+            CurrentPlayer.Inventory.Add(ItemFactory.CreateItem(2001));
+            CurrentPlayer.Inventory.Add(ItemFactory.CreateItem(2002));
 
-            CurrentPlayer.CurrentWeapon = CurrentPlayer.WeaponInventory.First();
+            CurrentPlayer.CurrentWeapon = CurrentPlayer.Inventory.First();
         }
 
         public void Update(ConsoleKeyInfo input)
@@ -83,6 +82,7 @@ namespace con_rogue
             {
                 gui.OpenInventoryWindow();
             }
+
             // Inventory window logic
             if (gui.GetInventoryWindowState())
             {
@@ -103,26 +103,15 @@ namespace con_rogue
                     {
                         gui.CloseInventoryWindow();
                     }
-                    // Open specific item option menu
-                    if (char.IsDigit(input.KeyChar))
-                    {
-                        itemChoice = 0;
-                        itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
-                        for (int i = 0; i < CurrentPlayer.WeaponInventory.Count; i++)
-                        {
-                            if (itemChoice == i)
-                            {
-                                gui.OpenItemSelected();
-                            }
-                        }
-                    }
 
                 } else
                 {
                     // Equip selected weapon
                     if(input.KeyChar == action.GetKeybind("equip"))
                     {
-                        CurrentPlayer.CurrentWeapon = CurrentPlayer.WeaponInventory[itemChoice];
+                        // Filter and order every weapon type item
+                        List<Item> filteredList = CurrentPlayer.Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
+                        CurrentPlayer.CurrentWeapon = filteredList[itemChoice];
                         gui.CloseItemSelected();
                     }
                     // Close specific item option menu
@@ -131,10 +120,24 @@ namespace con_rogue
                         gui.CloseItemSelected();
                     }
                 }
+
+                // Open specific item option menu inside inventory
+                if (char.IsDigit(input.KeyChar))
+                {
+                    itemChoice = 0;
+                    itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
+                    for (int i = 0; i < CurrentPlayer.Inventory.Count; i++)
+                    {
+                        if (itemChoice == i)
+                        {
+                            gui.OpenItemSelected();
+                        }
+                    }
+                }
             }
 
             // Open Travel Menu
-            if (input.KeyChar == action.GetKeybind("travel"))
+            if (input.KeyChar == action.GetKeybind("travel") && !gui.GetInventoryWindowState())
             {
                 gui.OpenTravelWindow();
             }
@@ -241,16 +244,15 @@ namespace con_rogue
         {
             messageLog.Add("You have defeated " + CurrentEnemy.Name + " !");
             messageLog.Add("You gain " + CurrentEnemy.RewardExp + " experienece");
-            messageLog.Add("You gain " + CurrentEnemy.RewardGold + " gold");
+            messageLog.Add("You gain " + CurrentEnemy.Gold + " gold");
             messageLog.Add("Press [x] to exit...");
-            foreach (ItemBundle itemBundle in CurrentEnemy.Inventory)
+            foreach (Item item in CurrentEnemy.Inventory)
             {
-                Item item = ItemFactory.CreateItem(itemBundle.ID);
                 CurrentPlayer.AddItemToInventory(item);
-                messageLog.Add("You obtain " + itemBundle.Quantity + " " + item.Name);
+                messageLog.Add("You obtain " + item.Name);
             }
             CurrentPlayer.Experience += CurrentEnemy.RewardExp;
-            CurrentPlayer.Gold += CurrentEnemy.RewardGold;
+            CurrentPlayer.Gold += CurrentEnemy.Gold;
         }
 
         public void Defend()
@@ -312,9 +314,9 @@ namespace con_rogue
                     {
                         foreach (ItemBundle itemBundle in quest.ItemsToComplete)
                         {
-                            for (int i = 0; i < CurrentPlayer.ItemInventory.Count; i++)
+                            for (int i = 0; i < itemBundle.Quantity; i++)
                             {
-                                CurrentPlayer.ItemInventory.Remove(CurrentPlayer.ItemInventory.First(item => item.ID == itemBundle.ID));
+                                CurrentPlayer.RemoveItemFromInventory(CurrentPlayer.Inventory.First(item => item.ID == itemBundle.ID));
                             }
                         }
 
@@ -323,7 +325,7 @@ namespace con_rogue
 
                         foreach (ItemBundle itemBundle in quest.RewardItems)
                         {
-                            Item rewardItem = ItemFactory.CreateWeapon(itemBundle.ID);
+                            Item rewardItem = ItemFactory.CreateItem(itemBundle.ID);
 
                             CurrentPlayer.AddItemToInventory(rewardItem);
                             messageLog.Add($"You receive {rewardItem.Name}.");

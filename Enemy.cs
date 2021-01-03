@@ -4,16 +4,11 @@ using System.Text;
 
 namespace con_rogue
 {
-    public class Enemy
+    public class Enemy : Entity
     {
-        public string Name { get; set; }
-        public int MaxHealth { get; set; }
-        public int Health { get; set; }
         public int MinDmg { get; set; }
         public int MaxDmg { get; set; }
         public int RewardExp { get; set; }
-        public int RewardGold { get; set; }
-        public List<ItemBundle> Inventory { get; set; }
 
         public Enemy(string name, int maxHealth, int health, int minDmg, int maxDmg, int rewardExp, int rewardGold)
         {
@@ -23,9 +18,7 @@ namespace con_rogue
             MinDmg = minDmg;
             MaxDmg = maxDmg;
             RewardExp = rewardExp;
-            RewardGold = rewardGold;
-
-            Inventory = new List<ItemBundle>();
+            Gold = rewardGold;
         }
 
         public void PrintBattleStats(int x, int y)

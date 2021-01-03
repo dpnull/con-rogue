@@ -5,35 +5,23 @@ using System.Linq;
 
 namespace con_rogue
 {
-    public class Player
+    public class Player : Entity
     {
 
-        public string Name { get; set; }
-        public int Health { get; set; }
         public int Experience { get; set; }
         public int Level { get; set; }
-        public int Gold { get; set; }
-
-        public List<Item> ItemInventory { get; set; }
-        public List<Weapon> WeaponInventory { get; set; }
-
         public List<QuestStatus> Quests { get; set; }
-
-        public Weapon CurrentWeapon { get; set; }
+        public Item CurrentWeapon { get; set; }
 
         public Player()
         {
             Name = "Dom";
-            Health = 100;
+            Health = 500;
             Experience = 0;
             Level = 1;
             Gold = 25;
 
-            ItemInventory = new List<Item>();
-            WeaponInventory = new List<Weapon>();
             Quests = new List<QuestStatus>();
-
-
         }
 
         public Player(string name, int health, int experience, int level, int gold)
@@ -45,18 +33,11 @@ namespace con_rogue
             Gold = gold;
         }
 
-        // Remove item from player's inventory
-        public void RemoveItemFromInventory(Item item)
-        {
-            ItemInventory.Remove(item);
-        }
-
-        // 
         public bool HasRequiredItems(List<ItemBundle> items)
         {
             foreach(ItemBundle item in items)
             {
-                if(ItemInventory.Count(i => i.ID == item.ID) < item.Quantity)
+                if(Inventory.Count(i => i.ID == item.ID) < item.Quantity)
                 {
                     return false;
                 }
@@ -89,26 +70,65 @@ namespace con_rogue
 
         public void PrintWeapons(int x, int y)
         {
-            for (int i = 0; i < WeaponInventory.Count; i++)
+            int index = 0;
+            foreach(Item item in Inventory)
             {
+                if(item.Type != Item.ItemType.Weapon)
+                {
+                    continue;
+                }
+                index++;
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine("{0}) {1}  [{2} - {3}]", i + 1, WeaponInventory[i].Name, WeaponInventory[i].MinDmg, WeaponInventory[i].MaxDmg);
+                Console.WriteLine($"{index}) {item.Name}    [{item.MinDmg} - {item.MaxDmg}]");
             }
         }
 
+        /*
+        public void PrintWeapons(int x, int y)
+        {
+            int index = 0;
+            for (int i = 0; i < Inventory.Count; i++)
+            {
+                if(Inventory[i].Type == Item.ItemType.Weapon)
+                {
+                    Inventory.OrderByDescending(x => (int)(x.Type)).ToList();
+                    index++;
+                    y++;
+                    Console.SetCursorPosition(x, y);
+                    Console.WriteLine("{0}) {1}  [{2} - {3}]", index, Inventory[i].Name, Inventory[i].MinDmg, Inventory[i].MaxDmg);            
+                }
+            }
+        }
+        */
+
         public void PrintMisc(int x, int y)
         {
-            for (int i = 0; i < ItemInventory.Count; i++)
+            int index = 0;
+            for (int i = 0; i < Inventory.Count; i++)
             {
-                y++;
-                Console.SetCursorPosition(x, y);
-                Console.WriteLine("{0}) {1}   [ ${2} ]", i + 1, ItemInventory[i].Name, ItemInventory[i].Price);
+                if(Inventory[i].Type == Item.ItemType.Miscellaneous)
+                {
+                    index++;
+                    y++;
+                    Console.SetCursorPosition(x, y);
+                    Console.WriteLine("{0}) {1}   [ ${2} ]", index, Inventory[i].Name, Inventory[i].Price);       
+                }
             }
         }
 
         public void PrintItemOptions(int x, int y, Action action)
         {
+            List<Item> filteredList = Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
+            string name = filteredList[GameSession.itemChoice].Name;
+            string description = filteredList[GameSession.itemChoice].Description;
+
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"- {name} -");
+            y++;
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"\"{description}\"");
             y++;
             Console.SetCursorPosition(x, y);
             Console.WriteLine($"{action.GetKeybind("equip")}) Equip");
@@ -120,14 +140,6 @@ namespace con_rogue
             Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
         }
 
-        public void AddWeaponToInventory(Weapon weapon)
-        {
-            WeaponInventory.Add(weapon);
-        }
 
-        public void AddItemToInventory(Item item)
-        {
-            ItemInventory.Add(item);
-        }
     }
 }

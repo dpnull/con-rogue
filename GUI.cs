@@ -231,7 +231,7 @@ namespace con_rogue
             }
             if (itemSelected)
             {
-                DrawBox(0, y + height, 20, 5, null, false, false);
+                DrawBox(0, y + height, 32, 7, null, false, false);
                 player.PrintItemOptions(2, y + height, action);
             }
         }

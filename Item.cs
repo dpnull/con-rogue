@@ -6,23 +6,37 @@ namespace con_rogue
 {
     public class Item
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int Price { get; set; }
-
-        public Item(int id, string name, string description, int price)
+        public enum ItemType
         {
+            Miscellaneous,
+            Weapon
+        }
+        public ItemType Type { get; }
+        public int ID { get; }
+        public string Name { get; }
+        public string Description { get; }
+        public int Price { get; }
+        public bool IsUnique { get; }
+        public int MinDmg { get; }
+        public int MaxDmg { get; }
+
+        public Item(ItemType type, int id, string name, string description, int price, bool isUnique = false, int minDmg = 0, int maxDmg = 0)
+        {
+            Type = type;
             ID = id;
             Name = name;
             Price = price;
             Description = description;
+            IsUnique = isUnique;
+            MinDmg = minDmg;
+            MaxDmg = maxDmg;
+            
         }
 
         // Instantiate new game item 
         public Item Clone()
         {
-            return new Item(ID, Name, Description, Price);
+            return new Item(Type, ID, Name, Description, Price, IsUnique, MinDmg, MaxDmg);
         }
     }
 }
