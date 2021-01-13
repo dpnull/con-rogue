@@ -21,6 +21,7 @@ namespace con_rogue.Factory
             action.AddAction("hunt", 'h', "Hunt", false);
             action.AddAction("gather", 'g', "Gather", false);
             action.AddAction("attack", 'a', "Attack", false);
+            action.AddAction("trade", 'T', "Trade", false);
 
             // Inventory
             action.AddAction("equip", 'e', "Equip", false);

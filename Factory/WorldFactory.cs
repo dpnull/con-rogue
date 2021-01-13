@@ -18,6 +18,7 @@ namespace con_rogue.Factory
             world.AddLocation(1, 1, "Old Blacksmith", "An elderly blacksmith. Shaky but can do his job.");
             world.AddLocation(1, 2, "Market", "An old lady works here selling all sorts of items. But useless.");
             world.GetLocation(1, 2).QuestsAvailable.Add(QuestFactory.GetQuestByID(1));
+            world.GetLocation(1, 2).TraderHere = TraderFactory.GetTraderByName("Old Lady");
 
             world.AddLocation(2, 0, "Forest", "Thick forest with lively ecosystem.");
             world.GetLocation(2, 0).AddEnemy(1, 50);

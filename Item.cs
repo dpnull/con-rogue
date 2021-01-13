@@ -20,6 +20,7 @@ namespace con_rogue
         public int MinDmg { get; }
         public int MaxDmg { get; }
 
+        // Item is not unique by default
         public Item(ItemType type, int id, string name, string description, int price, bool isUnique = false, int minDmg = 0, int maxDmg = 0)
         {
             Type = type;

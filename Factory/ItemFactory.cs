@@ -19,6 +19,7 @@ namespace con_rogue.Factory
             NewWeapon(2001, "Training Stick", "Not much value in a fight.", 5, 3, 7);
             NewWeapon(2002, "Copper Broadsword", "An apprenticeship's craft.", 10, 7, 10);
             NewWeapon(2003, "Copper Longsword", "An apprenticeship's craft.", 10, 5, 12);
+            NewWeapon(2004, "Iron Longsword", "Poor king's knight's weapon.", 25, 9, 16);
 
         }
 
