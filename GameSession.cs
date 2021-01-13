@@ -24,6 +24,7 @@ namespace con_rogue
                 GiveQuestsAtLocation();
                 CompleteQuestsAtLocation();
 
+                CurrentTrader = CurrentLocation.TraderHere;
             }
         }
 
@@ -34,10 +35,17 @@ namespace con_rogue
 
         public Enemy CurrentEnemy { get; set; }
 
+        public static Trader CurrentTrader { get; set; }
+
         public MessageLog messageLog { get; set; }
 
         public bool HasEnemy => CurrentEnemy != null;
+        public static bool HasTrader => CurrentTrader != null;
         public bool InCombat = false;
+
+        public static bool CAN_OPEN_INVENTORY = true;
+        public static bool CAN_TRADE = false;
+        public static bool CAN_TRAVEL = false;
 
         private GUI gui;
         public static ConsoleKeyInfo Input;
@@ -51,7 +59,7 @@ namespace con_rogue
             messageLog = new MessageLog();
 
             // Populate player object
-            CurrentPlayer = new Player();
+            CurrentPlayer = new Player("Dom", 500, 500, 0, 1, 0);
 
             // Create new GUI dimensions
             gui = new GUI(100, 30);
@@ -69,8 +77,10 @@ namespace con_rogue
             battleAction = actionFactory.CreateBattleAction();
 
 
-            CurrentPlayer.Inventory.Add(ItemFactory.CreateItem(2001));
-            CurrentPlayer.Inventory.Add(ItemFactory.CreateItem(2002));
+            CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(2001));
+            CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(2002));
+            CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(2003));
+            CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(1001));
 
             CurrentPlayer.CurrentWeapon = CurrentPlayer.Inventory.First();
         }
@@ -78,9 +88,44 @@ namespace con_rogue
         public void Update(ConsoleKeyInfo input)
         {
             // Open Inventory
-            if (input.KeyChar == action.GetKeybind("inventory") && !gui.GetTravelWindowState())
+            if (input.KeyChar == action.GetKeybind("inventory") && CAN_OPEN_INVENTORY)
             {
                 gui.OpenInventoryWindow();
+            }
+            // Trade
+            if (input.KeyChar == action.GetKeybind("trade") && CAN_TRADE)
+            {
+                gui.OpenTradeWindow();
+            }
+
+            // Trade window logic
+            if (gui.GetTradeWindowState())
+            {
+                if(input.KeyChar == action.GetKeybind("trader_side"))
+                {
+                    gui.ChooseTraderTradeSide();
+                }
+                if(input.KeyChar == action.GetKeybind("player_side"))
+                {
+                    gui.ChoosePlayerTradeSide();
+                }
+                if (gui.GetPlayerTradeSide())
+                {
+                    SelectedItemAction(CurrentPlayer, input);
+                }
+                if (gui.GetTraderTradeSide())
+                {
+                    SelectedItemAction(CurrentLocation.TraderHere, input);
+                }
+                // Close specific item option menu
+                if (gui.GetItemSelectedState())
+                {
+                    if (input.KeyChar == action.GetKeybind("cancel"))
+                    {
+                        gui.CloseItemSelected();
+                    }
+                }
+
             }
 
             // Inventory window logic
@@ -120,34 +165,21 @@ namespace con_rogue
                         gui.CloseItemSelected();
                     }
                 }
-
-                // Open specific item option menu inside inventory
-                if (char.IsDigit(input.KeyChar))
-                {
-                    itemChoice = 0;
-                    itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
-                    for (int i = 0; i < CurrentPlayer.Inventory.Count; i++)
-                    {
-                        if (itemChoice == i)
-                        {
-                            gui.OpenItemSelected();
-                        }
-                    }
-                }
+                SelectedItemAction(CurrentPlayer, input);
             }
 
             // Open Travel Menu
-            if (input.KeyChar == action.GetKeybind("travel") && !gui.GetInventoryWindowState())
+            if (input.KeyChar == action.GetKeybind("travel") && CAN_TRAVEL)
             {
                 gui.OpenTravelWindow();
             }
             // Close Travel Menu
-            if (input.KeyChar == action.GetKeybind("exit") && gui.GetTravelWindowState())
+            if (input.KeyChar == action.GetKeybind("exit") && CAN_TRAVEL)
             {
                 gui.CloseTravelWindow();
             }
             // Commence X Travel
-            if (char.IsDigit(input.KeyChar) && gui.GetTravelWindowState())
+            if (char.IsDigit(input.KeyChar) && gui.GetTravelWindowState()) // GetTravelWindow state shouldn't be here
             {
                 int choice = 0;
                 choice = int.Parse(input.KeyChar.ToString()) - 1;
@@ -181,6 +213,7 @@ namespace con_rogue
                 if(input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt") && InCombat != true)
                 {
                     GetEnemyAtLocation();
+                    gui.OpenBattleWindow();
                     InCombat = true;
                 }
             }
@@ -197,16 +230,33 @@ namespace con_rogue
                     if (CurrentEnemy.Health <= 0)
                     {
                         InCombat = false;
+                        gui.CloseBattleWindow();
                     }
                 }
 
             }
 
-
-
             // Redraw
             gui.Render(this);
         }
+
+        public void SelectedItemAction(Entity entity, ConsoleKeyInfo input)
+        {
+            if (char.IsDigit(input.KeyChar))
+            {
+                itemChoice = 0;
+                itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
+
+                for (int i = 0; i < entity.GroupedInventory.Count; i++)
+                {
+                    if (itemChoice == i)
+                    {
+                        gui.OpenItemSelected();
+                    }
+                }
+            }
+        }
+
         public void Attack()
         {
             if (CurrentPlayer.CurrentWeapon == null)
@@ -225,14 +275,14 @@ namespace con_rogue
             }
             else
             {
-                CurrentEnemy.Health -= damageDealt;
+                CurrentEnemy.TakeDamage(damageDealt);
                 messageLog.Add("You hit " + CurrentEnemy.Name + " for " + damageDealt + " damage!");
             }
 
             if (CurrentEnemy.Health <= 0)
             {
                 KillReward();
-                CurrentEnemy.Health = 0;
+                CurrentEnemy.SetHealth(0);
             }
             else
             {
@@ -252,7 +302,7 @@ namespace con_rogue
                 messageLog.Add("You obtain " + item.Name);
             }
             CurrentPlayer.Experience += CurrentEnemy.RewardExp;
-            CurrentPlayer.Gold += CurrentEnemy.Gold;
+            CurrentPlayer.AddGold(CurrentEnemy.Gold);
         }
 
         public void Defend()
@@ -265,7 +315,7 @@ namespace con_rogue
             }
             else
             {
-                CurrentPlayer.Health -= damageReceived;
+                CurrentPlayer.TakeDamage(damageReceived);
                 messageLog.Add(CurrentEnemy.Name + " hits you for " + damageReceived + " damage!");
             }
 

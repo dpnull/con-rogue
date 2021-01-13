@@ -15,6 +15,7 @@ namespace con_rogue
         // Initializing removes need for constructor
         public List<Quest> QuestsAvailable { get; set; } = new List<Quest>();
         public List<EnemyEncounter> EnemiesHere { get; set; } = new List<EnemyEncounter>();
+        public Trader TraderHere { get; set; }
 
         public Location()
         {

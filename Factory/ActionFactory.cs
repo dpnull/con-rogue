@@ -21,10 +21,17 @@ namespace con_rogue.Factory
             action.AddAction("hunt", 'h', "Hunt", false);
             action.AddAction("gather", 'g', "Gather", false);
             action.AddAction("attack", 'a', "Attack", false);
+            action.AddAction("trade", 'T', "Trade", false);
 
             // Inventory
             action.AddAction("equip", 'e', "Equip", false);
             action.AddAction("drop", 'd', "Drop", false);
+
+            // Trading
+            action.AddAction("trader_side", '>', "Trader Side", false);
+            action.AddAction("player_side", '<', "Player Side", false);
+            action.AddAction("sell", 's', "Sell", false);
+            action.AddAction("buy", 'b', "Buy", false);
 
             return action;
         }

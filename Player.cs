@@ -13,24 +13,13 @@ namespace con_rogue
         public List<QuestStatus> Quests { get; set; }
         public Item CurrentWeapon { get; set; }
 
-        public Player()
+        public Player(string name, int maxHealth, int health, int experience, int level, int gold) :
+            base(name, maxHealth, health, gold)
         {
-            Name = "Dom";
-            Health = 500;
-            Experience = 0;
-            Level = 1;
-            Gold = 25;
-
-            Quests = new List<QuestStatus>();
-        }
-
-        public Player(string name, int health, int experience, int level, int gold)
-        {
-            Name = name;
-            Health = health;
             Experience = experience;
             Level = level;
-            Gold = gold;
+
+            Quests = new List<QuestStatus>();
         }
 
         public bool HasRequiredItems(List<ItemBundle> items)
@@ -105,16 +94,25 @@ namespace con_rogue
         public void PrintMisc(int x, int y)
         {
             int index = 0;
-            for (int i = 0; i < Inventory.Count; i++)
+            for (int i = 0; i < GroupedInventory.Count; i++)
             {
-                if(Inventory[i].Type == Item.ItemType.Miscellaneous)
+                if(GroupedInventory[i].Item.Type == Item.ItemType.Miscellaneous)
                 {
                     index++;
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine("{0}) {1}   [ ${2} ]", index, Inventory[i].Name, Inventory[i].Price);       
+                    Console.WriteLine("{0}) [ x{1} ] {2}   [ ${3} ]", index, GroupedInventory[i].Quantity, GroupedInventory[i].Item.Name, GroupedInventory[i].Item.Price);       
                 }
             }
+        }
+
+        public void PrintTradeScreen(int x, int y, Action action)
+        {
+            int index = 0;
+            y++;
+
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"{0} | {1}",action.GetKeybind("weapons"), action.GetKeybind("misc"));
         }
 
         public void PrintItemOptions(int x, int y, Action action)

@@ -10,15 +10,12 @@ namespace con_rogue
         public int MaxDmg { get; set; }
         public int RewardExp { get; set; }
 
-        public Enemy(string name, int maxHealth, int health, int minDmg, int maxDmg, int rewardExp, int rewardGold)
+        public Enemy(string name, int maxHealth, int health, int minDmg, int maxDmg, int rewardExp, int rewardGold) :
+            base(name, maxHealth, health, rewardGold)
         {
-            Name = name;
-            MaxHealth = maxHealth;
-            Health = health;
             MinDmg = minDmg;
             MaxDmg = maxDmg;
             RewardExp = rewardExp;
-            Gold = rewardGold;
         }
 
         public void PrintBattleStats(int x, int y)
