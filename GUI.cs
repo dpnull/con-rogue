@@ -295,8 +295,8 @@ namespace con_rogue
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.
                     if (itemSelected && GameSession.itemChoice < player.GroupedInventory.Count)
                     {
-                        DrawBox(0, 11, Width / 2, 7, null, false, false);
-                        trader.PrintItemSellOptions(1, 11, action, false);
+                        DrawBox(0, Height / 2 - 4, Width / 2, 7, null, false, false);
+                        trader.PrintItemSellOptions(1, Height / 2 - 4, action, false);
                     }
                 } else
                 {
@@ -306,8 +306,8 @@ namespace con_rogue
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.
                     if (itemSelected && GameSession.itemChoice < player.GroupedInventory.Count)
                     {
-                        DrawBox(0, 11, Width / 2, 7, null, false, false);
-                        player.PrintItemSellOptions(1, 11, action, true);
+                        DrawBox(0, Height / 2 - 4, Width / 2, 7, null, false, false);
+                        player.PrintItemSellOptions(1, Height / 2 - 4, action, true);
                     }
                 }               
 
