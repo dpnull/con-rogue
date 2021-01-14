@@ -165,6 +165,11 @@ namespace con_rogue
             }
         }
 
+                GroupedInventory.First(gi => gi.Item.ID == item.ID).Quantity++;
+                
+            }
+        }
+
         public void RemoveItemFromInventory(Item item)
         {
             Inventory.Remove(item);
