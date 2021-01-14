@@ -13,6 +13,7 @@ namespace con_rogue.Factory
         {
             Trader oldLady = new Trader("Old Lady");
             oldLady.AddItemToInventory(ItemFactory.CreateItem(2004));
+            oldLady.AddItemToInventory(ItemFactory.CreateItem(2003));
             oldLady.AddItemToInventory(ItemFactory.CreateItem(1000));
 
             AddTrader(oldLady);

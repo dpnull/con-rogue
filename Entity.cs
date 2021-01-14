@@ -40,6 +40,7 @@ namespace con_rogue
         // Hold items that can be stacked
         public List<GroupedInventoryItem> GroupedInventory { get; set; }
 
+        // 
         public List<Item> Weapons => Inventory.Where(i => i.Type == Item.ItemType.Weapon).ToList();
 
         // Only a child class can use the constructor
@@ -80,7 +81,7 @@ namespace con_rogue
 
         public void AddGold(int g)
         {
-            Gold = g;
+            Gold += g;
         }
 
         public void RemoveGold(int g)
@@ -88,27 +89,36 @@ namespace con_rogue
             Gold -= g;
         }
 
-        public void PrintItemSellOptions(int x, int y, Action action)
+        public void PrintItemSellOptions(int x, int y, Action action, bool isSelling)
         {
-            List<Item> filteredList = Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
-            string name = filteredList[GameSession.itemChoice].Name;
-            string description = filteredList[GameSession.itemChoice].Description;
+            // TODO: fix out of bounds array when 0 is inputted
+            // List<Item> filteredList = Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
+            if (GameSession.itemChoice < GroupedInventory.Count())
+            {
+                string name = GroupedInventory[GameSession.itemChoice].Item.Name;
+                string description = GroupedInventory[GameSession.itemChoice].Item.Description;
 
-            y++;
-            Console.SetCursorPosition(x, y);
-            Console.WriteLine($"- {name} -");
-            y++;
-            Console.SetCursorPosition(x, y);
-            Console.WriteLine($"\"{description}\"");
-            y++;
-            Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{action.GetKeybind("sell")}) Sell");
-            y++;
-            Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{action.GetKeybind("buy")}) Buy");
-            y++;
-            Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
+                y++;
+                Console.SetCursorPosition(x, y);
+                Console.WriteLine($"- {name} -");
+                y++;
+                Console.SetCursorPosition(x, y);
+                Console.WriteLine($"\"{description}\"");
+                if (isSelling)
+                {
+                    y++;
+                    Console.SetCursorPosition(x, y);
+                    Console.WriteLine($"{action.GetKeybind("sell")}) Sell");
+                } else
+                {
+                    y++;
+                    Console.SetCursorPosition(x, y);
+                    Console.WriteLine($"{action.GetKeybind("buy")}) Buy");
+                }
+                y++;
+                Console.SetCursorPosition(x, y);
+                Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
+            }
         }
 
         public void PrintItems(int x, int y, int windowWidth, ConsoleColor color)
@@ -120,26 +130,29 @@ namespace con_rogue
             y++;
             foreach (GroupedInventoryItem item in GroupedInventory)
             {
-                if (item.Item.Type != Item.ItemType.Weapon)
+                if (item.Item != null)
                 {
-                    index++;
-                    y++;
-                    Console.SetCursorPosition(x, y);
-                    Console.WriteLine($"{index}) {item.Item.Name} Quantity:{item.Quantity}");
-                    Console.SetCursorPosition(x + windowWidth - 9, y);
-                    Console.WriteLine($"{item.Item.Price}");
+                    if (!item.Item.IsUnique)
+                    {
+                        index++;
+                        y++;
+                        Console.SetCursorPosition(x, y);
+                        Console.WriteLine($"{index}) {item.Item.Name} Quantity:{item.Quantity}");
+                        Console.SetCursorPosition(x + windowWidth - 9, y);
+                        Console.WriteLine($"{item.Item.Price}");
+                    }
+                    else
+                    {
+                        index++;
+                        y++;
+                        Console.SetCursorPosition(x, y);
+                        Console.WriteLine($"{index}) {item.Item.Name}");
+                        Console.SetCursorPosition(x + windowWidth - 9, y);
+                        Console.WriteLine($"{item.Item.Price}");
+                    }
                 }
-                else
-                {
-                    index++;
-                    y++;
-                    Console.SetCursorPosition(x, y);
-                    Console.WriteLine($"{index}) {item.Item.Name}");
-                    Console.SetCursorPosition(x + windowWidth - 9, y);
-                    Console.WriteLine($"{item.Item.Price}");
-                }
-
             }
+
             Console.ForegroundColor = ConsoleColor.White;
         }
 
@@ -155,30 +168,31 @@ namespace con_rogue
             // if it isn't, loop through every item using id to see if passed id is equal then skip. if not, create the stack and add the item to stack inventory
             else
             {
-                if(!GroupedInventory.Any(gi => gi.Item.ID == item.ID))
+                if (!GroupedInventory.Any(gi => gi.Item.ID == item.ID))
                 {
                     GroupedInventory.Add(new GroupedInventoryItem(item, 0));
                 }
 
                 GroupedInventory.First(gi => gi.Item.ID == item.ID).Quantity++;
-                
+
             }
         }
 
-                GroupedInventory.First(gi => gi.Item.ID == item.ID).Quantity++;
-                
-            }
-        }
 
-        public void RemoveItemFromInventory(Item item)
+        public void RemoveItemFromInventory(GroupedInventoryItem item)
         {
-            Inventory.Remove(item);
+            GroupedInventory.Remove(item);
 
-            GroupedInventoryItem stackedItemToRemove = GroupedInventory.FirstOrDefault(gi => item.ID == item.ID);
+            // Check if item is unique
+            // If unique, return the exact matching item
+            // If not unique, return first or default grouped item with same item id in it
+            GroupedInventoryItem stackedItemToRemove = item.Item.IsUnique ?
+                GroupedInventory.FirstOrDefault(gi => gi.Item == item.Item) :
+                GroupedInventory.FirstOrDefault(gi => gi.Item.ID == item.Item.ID);
 
-            if(stackedItemToRemove != null)
+            if (stackedItemToRemove != null)
             {
-                if(stackedItemToRemove.Quantity == 1)
+                if (stackedItemToRemove.Quantity == 1)
                 {
                     GroupedInventory.Remove(stackedItemToRemove);
                 }
@@ -188,5 +202,6 @@ namespace con_rogue
                 }
             }
         }
+         
     }
 }

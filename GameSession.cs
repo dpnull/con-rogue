@@ -4,7 +4,6 @@ using System.Text;
 using con_rogue.Factory;
 using System.Linq;
 
-// TODO: FIX ITEM/WEAPON FACTORY
 
 namespace con_rogue
 {
@@ -82,7 +81,7 @@ namespace con_rogue
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(2003));
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(1001));
 
-            CurrentPlayer.CurrentWeapon = CurrentPlayer.Inventory.First();
+            CurrentPlayer.CurrentWeapon = ItemFactory.CreateItem(2001);
         }
 
         public void Update(ConsoleKeyInfo input)
@@ -97,15 +96,14 @@ namespace con_rogue
             {
                 gui.OpenTradeWindow();
             }
-
             // Trade window logic
             if (gui.GetTradeWindowState())
             {
-                if(input.KeyChar == action.GetKeybind("trader_side"))
+                if (input.KeyChar == action.GetKeybind("trader_side"))
                 {
                     gui.ChooseTraderTradeSide();
                 }
-                if(input.KeyChar == action.GetKeybind("player_side"))
+                if (input.KeyChar == action.GetKeybind("player_side"))
                 {
                     gui.ChoosePlayerTradeSide();
                 }
@@ -117,17 +115,29 @@ namespace con_rogue
                 {
                     SelectedItemAction(CurrentLocation.TraderHere, input);
                 }
-                // Close specific item option menu
                 if (gui.GetItemSelectedState())
                 {
                     if (input.KeyChar == action.GetKeybind("cancel"))
                     {
                         gui.CloseItemSelected();
                     }
+                    if(input.KeyChar == action.GetKeybind("sell"))
+                    {
+                        SellSelectedItem();
+                    }
+                    if(input.KeyChar == action.GetKeybind("buy"))
+                    {
+                        BuySelectedItem();
+                    }
+                }
+
+                // Exit
+                if(input.KeyChar == action.GetKeybind("exit"))
+                {
+                    gui.CloseTradeWindow();
                 }
 
             }
-
             // Inventory window logic
             if (gui.GetInventoryWindowState())
             {
@@ -149,10 +159,11 @@ namespace con_rogue
                         gui.CloseInventoryWindow();
                     }
 
-                } else
+                }
+                else
                 {
                     // Equip selected weapon
-                    if(input.KeyChar == action.GetKeybind("equip"))
+                    if (input.KeyChar == action.GetKeybind("equip"))
                     {
                         // Filter and order every weapon type item
                         List<Item> filteredList = CurrentPlayer.Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
@@ -180,6 +191,7 @@ namespace con_rogue
             }
             // Commence X Travel
             if (char.IsDigit(input.KeyChar) && gui.GetTravelWindowState()) // GetTravelWindow state shouldn't be here
+            if (char.IsDigit(input.KeyChar) && CAN_TRAVEL)
             {
                 int choice = 0;
                 choice = int.Parse(input.KeyChar.ToString()) - 1;
@@ -196,7 +208,7 @@ namespace con_rogue
             }
 
             // Location specific 
-            if(CurrentLocation.X == 1)
+            if (CurrentLocation.X == 1)
             {
                 if (input.KeyChar == action.GetKeybind("blacksmith") && action.GetActionState("blacksmith"))
                 {
@@ -210,7 +222,7 @@ namespace con_rogue
 
             if (CurrentLocation.X == 2)
             {
-                if(input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt") && InCombat != true)
+                if (input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt") && InCombat != true)
                 {
                     GetEnemyAtLocation();
                     gui.OpenBattleWindow();
@@ -255,6 +267,22 @@ namespace con_rogue
                     }
                 }
             }
+        }
+
+        public void SellSelectedItem()
+        {
+            var toSell = CurrentPlayer.GroupedInventory[itemChoice];
+            CurrentPlayer.AddGold(toSell.Item.Price);
+            CurrentLocation.TraderHere.AddItemToInventory(toSell.Item);
+            CurrentPlayer.RemoveItemFromInventory(toSell);
+        }
+
+        public void BuySelectedItem()
+        {
+            var toBuy = CurrentLocation.TraderHere.GroupedInventory[itemChoice];
+
+            CurrentPlayer.AddItemToInventory(toBuy.Item);
+            CurrentLocation.TraderHere.RemoveItemFromInventory(toBuy);
         }
 
         public void Attack()
@@ -353,12 +381,12 @@ namespace con_rogue
 
         public void CompleteQuestsAtLocation()
         {
-            foreach(Quest quest in CurrentLocation.QuestsAvailable)
+            foreach (Quest quest in CurrentLocation.QuestsAvailable)
             {
                 // Get the first quest where the ID matches and has not yet been completed
                 QuestStatus questToComplete = CurrentPlayer.Quests.FirstOrDefault(q => q.PlayerQuest.ID == quest.ID && !q.IsCompleted);
 
-                if(questToComplete != null)
+                if (questToComplete != null)
                 {
                     if (CurrentPlayer.HasRequiredItems(quest.ItemsToComplete))
                     {
@@ -366,12 +394,14 @@ namespace con_rogue
                         {
                             for (int i = 0; i < itemBundle.Quantity; i++)
                             {
-                                CurrentPlayer.RemoveItemFromInventory(CurrentPlayer.Inventory.First(item => item.ID == itemBundle.ID));
+                                CurrentPlayer.RemoveItemFromInventory(CurrentPlayer.GroupedInventory.First(item => item.Item.ID == itemBundle.ID));
                             }
                         }
 
                         messageLog.Add($"{quest.Name} has been completed!");
                         messageLog.Add($"You receive {quest.RewardExp} experience and {quest.RewardGold} gold.");
+                        CurrentPlayer.AddGold(quest.RewardGold);
+                        CurrentPlayer.Experience += quest.RewardExp;
 
                         foreach (ItemBundle itemBundle in quest.RewardItems)
                         {
