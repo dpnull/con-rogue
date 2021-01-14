@@ -28,7 +28,7 @@ namespace con_rogue
         private bool itemSelected = false;
 
         // Lazy bools for trading
-        private bool playerTradeSide = false;
+        private bool playerTradeSide = true;
         private bool traderTradeSide = false;
 
         public GUI()
