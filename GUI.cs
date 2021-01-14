@@ -93,7 +93,7 @@ namespace con_rogue
                 DrawInventory(gameSession.CurrentPlayer, gameSession.action, invY, invH, inventoryVisibility);
 
                 // Draw trade window
-                DrawTradeWindow(0, 0, gameSession.action, gameSession.CurrentPlayer, gameSession.CurrentLocation, GetTradeWindowState());
+                DrawTradeWindow(0, 0, gameSession.action, gameSession.CurrentPlayer, gameSession.CurrentLocation.TraderHere, GetTradeWindowState());
             }
             // Draw battle window
             // Disable every other window
@@ -278,7 +278,7 @@ namespace con_rogue
             }
         }
 
-        public void DrawTradeWindow(int x, int y, Action action, Player player, Location loc, bool isVisible)
+        public void DrawTradeWindow(int x, int y, Action action, Player player, Trader trader, bool isVisible)
         {
             if (isVisible)
             {
@@ -287,21 +287,20 @@ namespace con_rogue
                 DrawBox(x, y, Width / 2, Height / 2 - 4, "PLAYER", true, true);
                 DrawBox(Width / 2, y, Width / 2, Height / 2 - 4, "TRADER", true, true);
                 // Default selection should always be player trade side
-                
                 if (traderTradeSide)
                 {
-                    loc.TraderHere.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.Blue);
+                    trader.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.Blue);
                     player.PrintItems(2, y, Width / 2, ConsoleColor.White);
 
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.
                     if (itemSelected && GameSession.itemChoice < player.GroupedInventory.Count)
                     {
                         DrawBox(0, 11, Width / 2, 7, null, false, false);
-                        loc.TraderHere.PrintItemSellOptions(1, 11, action, false);
+                        trader.PrintItemSellOptions(1, 11, action, false);
                     }
                 } else
                 {
-                    loc.TraderHere.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.White);
+                    trader.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.White);
                     player.PrintItems(2, y, Width / 2, ConsoleColor.Blue);
 
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.

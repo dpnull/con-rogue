@@ -271,17 +271,17 @@ namespace con_rogue
 
         public void SellSelectedItem()
         {
-            var toSell = CurrentPlayer.GroupedInventory[itemChoice];
-            CurrentPlayer.AddGold(toSell.Item.Price);
-            CurrentLocation.TraderHere.AddItemToInventory(toSell.Item);
+            var toSell = CurrentPlayer.Inventory[itemChoice];
+            CurrentPlayer.AddGold(toSell.Price);
+            CurrentLocation.TraderHere.AddItemToInventory(toSell);
             CurrentPlayer.RemoveItemFromInventory(toSell);
         }
 
         public void BuySelectedItem()
         {
-            var toBuy = CurrentLocation.TraderHere.GroupedInventory[itemChoice];
+            var toBuy = CurrentTrader.Inventory[itemChoice];
 
-            CurrentPlayer.AddItemToInventory(toBuy.Item);
+            CurrentPlayer.AddItemToInventory(toBuy);
             CurrentLocation.TraderHere.RemoveItemFromInventory(toBuy);
         }
 
@@ -394,7 +394,7 @@ namespace con_rogue
                         {
                             for (int i = 0; i < itemBundle.Quantity; i++)
                             {
-                                CurrentPlayer.RemoveItemFromInventory(CurrentPlayer.GroupedInventory.First(item => item.Item.ID == itemBundle.ID));
+                                CurrentPlayer.RemoveItemFromInventory(CurrentPlayer.Inventory.First(item => item.ID == itemBundle.ID));
                             }
                         }
 

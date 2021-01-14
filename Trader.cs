@@ -9,7 +9,5 @@ namespace con_rogue
         public Trader(string name) : base(name, 100, 100, 10000)
         {
         }
-
-
     }
 }

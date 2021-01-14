@@ -179,16 +179,16 @@ namespace con_rogue
         }
 
 
-        public void RemoveItemFromInventory(GroupedInventoryItem item)
+        public void RemoveItemFromInventory(Item item)
         {
-            GroupedInventory.Remove(item);
+            Inventory.Remove(item);
 
             // Check if item is unique
             // If unique, return the exact matching item
             // If not unique, return first or default grouped item with same item id in it
-            GroupedInventoryItem stackedItemToRemove = item.Item.IsUnique ?
-                GroupedInventory.FirstOrDefault(gi => gi.Item == item.Item) :
-                GroupedInventory.FirstOrDefault(gi => gi.Item.ID == item.Item.ID);
+            GroupedInventoryItem stackedItemToRemove = item.IsUnique ?
+                GroupedInventory.FirstOrDefault(gi => gi.Item == item) :
+                GroupedInventory.FirstOrDefault(gi => gi.Item.ID == item.ID);
 
             if (stackedItemToRemove != null)
             {
@@ -202,6 +202,6 @@ namespace con_rogue
                 }
             }
         }
-         
+
     }
 }
