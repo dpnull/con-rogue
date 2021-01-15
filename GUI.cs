@@ -164,7 +164,7 @@ namespace con_rogue
                 string header = string.Format(" {0} ", location.Name.ToUpper());
                 DrawBox(0, y, locWidth, locHeight, header, false, false);
                 Console.SetCursorPosition(1, 4);
-                Console.WriteLine(" {0}", location.Description);
+                Console.Write(" {0}", location.Description);
             }
         }
 
@@ -290,8 +290,8 @@ namespace con_rogue
                 // Default selection should always be player trade side
                 if (traderTradeSide)
                 {
-                    trader.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.Blue);
-                    player.PrintItems(2, y, Width / 2, ConsoleColor.White);
+                    trader.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.Blue, GetTraderTradeSide());
+                    player.PrintItems(2, y, Width / 2, ConsoleColor.White, GetPlayerTradeSide());
 
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.
                     if (itemSelected && GameSession.itemChoice < trader.GroupedInventory.Count)
@@ -301,8 +301,8 @@ namespace con_rogue
                     }
                 } else
                 {
-                    trader.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.White);
-                    player.PrintItems(2, y, Width / 2, ConsoleColor.Blue);
+                    trader.PrintItems(Width / 2 + 2, 0, Width / 2, ConsoleColor.White, GetTraderTradeSide());
+                    player.PrintItems(2, y, Width / 2, ConsoleColor.Blue, GetPlayerTradeSide());
 
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.
                     if (itemSelected && GameSession.itemChoice < player.GroupedInventory.Count)

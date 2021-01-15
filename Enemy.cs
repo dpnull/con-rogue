@@ -22,23 +22,23 @@ namespace con_rogue
         {
             int damage = (MinDmg + MaxDmg) / 2;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"NAME:       {Name}");
+            Console.Write($"NAME:       {Name}");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"HEALTH:     {Health}");
+            Console.Write($"HEALTH:     {Health}");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"DAMAGE:     {damage}");
+            Console.Write($"DAMAGE:     {damage}");
         }
 
         public void DrawEnemy(int x, int y)
         {
             x += 2; y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine(Name);
+            Console.Write(Name);
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{Health} / {MaxHealth}");
+            Console.Write($"{Health} / {MaxHealth}");
         }
     }
 }

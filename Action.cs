@@ -53,7 +53,7 @@ namespace con_rogue
                 {
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine("{0}) {1}", action.Keybind.ToString(), action.Name);
+                    Console.Write("{0}) {1}", action.Keybind.ToString(), action.Name);
                 }
             }
         }

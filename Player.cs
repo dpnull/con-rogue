@@ -38,13 +38,13 @@ namespace con_rogue
         public void PrintBattleStats(int x, int y)
         {
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"HEALTH:     {Health}");
+            Console.Write($"HEALTH:     {Health}");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"WEAPON:     {CurrentWeapon.Name}");       
+            Console.Write($"WEAPON:     {CurrentWeapon.Name}");       
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"DAMAGE:     {CurrentWeapon.MinDmg} - {CurrentWeapon.MaxDmg}");
+            Console.Write($"DAMAGE:     {CurrentWeapon.MinDmg} - {CurrentWeapon.MaxDmg}");
         }
 
         public void PrintQuests(int x, int y)
@@ -53,7 +53,7 @@ namespace con_rogue
             {
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine("{0}", Quests[i].PlayerQuest.Name);
+                Console.Write("{0}", Quests[i].PlayerQuest.Name);
             }
         }
 
@@ -69,7 +69,7 @@ namespace con_rogue
                 index++;
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"{index}) {item.Name}    [{item.MinDmg} - {item.MaxDmg}]");
+                Console.Write($"{index}) {item.Name}    [{item.MinDmg} - {item.MaxDmg}]");
             }
         }
 
@@ -85,7 +85,7 @@ namespace con_rogue
                     index++;
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine("{0}) {1}  [{2} - {3}]", index, Inventory[i].Name, Inventory[i].MinDmg, Inventory[i].MaxDmg);            
+                    Console.Write("{0}) {1}  [{2} - {3}]", index, Inventory[i].Name, Inventory[i].MinDmg, Inventory[i].MaxDmg);            
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace con_rogue
                     index++;
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine("{0}) [ x{1} ] {2}   [ ${3} ]", index, GroupedInventory[i].Quantity, GroupedInventory[i].Item.Name, GroupedInventory[i].Item.Price);       
+                    Console.Write("{0}) [ x{1} ] {2}   [ ${3} ]", index, GroupedInventory[i].Quantity, GroupedInventory[i].Item.Name, GroupedInventory[i].Item.Price);       
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace con_rogue
             y++;
 
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{0} | {1}",action.GetKeybind("weapons"), action.GetKeybind("misc"));
+            Console.Write($"{0} | {1}",action.GetKeybind("weapons"), action.GetKeybind("misc"));
         }
 
         public void PrintItemOptions(int x, int y, Action action)
@@ -123,26 +123,26 @@ namespace con_rogue
 
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"- {name} -");
+            Console.Write($"- {name} -");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"\"{description}\"");
+            Console.Write($"\"{description}\"");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{action.GetKeybind("equip")}) Equip");
+            Console.Write($"{action.GetKeybind("equip")}) Equip");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{action.GetKeybind("drop")}) Drop");
+            Console.Write($"{action.GetKeybind("drop")}) Drop");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
+            Console.Write($"{action.GetKeybind("cancel")}) Cancel");
         }
 
         public void PrintCurrentGold(int x, int y, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.SetCursorPosition(x, y);
-            Console.WriteLine($"Gold: {Gold}");
+            Console.Write($"Gold: {Gold}");
             Console.ForegroundColor = ConsoleColor.White;
         }
 

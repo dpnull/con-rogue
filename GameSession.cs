@@ -99,14 +99,35 @@ namespace con_rogue
             // Trade window logic
             if (gui.GetTradeWindowState())
             {
-                if (input.KeyChar == action.GetKeybind("trader_side"))
+                // Switch between player and trader window
+                if (input.KeyChar == action.GetKeybind("trader_side") || input.Key == ConsoleKey.RightArrow)
                 {
                     gui.ChooseTraderTradeSide();
+                    itemChoice = 0;
                 }
-                if (input.KeyChar == action.GetKeybind("player_side"))
+                if (input.KeyChar == action.GetKeybind("player_side") || input.Key == ConsoleKey.LeftArrow)
                 {
                     gui.ChoosePlayerTradeSide();
+                    itemChoice = 0;
                 }
+                // Move up and down on the list
+                if (input.Key == ConsoleKey.UpArrow && itemChoice > 0)
+                {
+                    itemChoice--;
+                }
+                if (input.Key == ConsoleKey.DownArrow)
+                {
+                    if (gui.GetTraderTradeSide() && itemChoice < CurrentTrader.Inventory.Count - 1)
+                    {
+                        itemChoice++;
+                    }
+                    else if (gui.GetPlayerTradeSide() && itemChoice < CurrentPlayer.Inventory.Count - 1)
+                    {
+                        itemChoice++;
+                    }
+                    
+                }
+                // Select item from player and trader window
                 if (gui.GetPlayerTradeSide())
                 {
                     SelectedItemAction(CurrentPlayer, input);
@@ -115,24 +136,28 @@ namespace con_rogue
                 {
                     SelectedItemAction(CurrentLocation.TraderHere, input);
                 }
+                // Selected item actions
                 if (gui.GetItemSelectedState())
                 {
+                    // Visible on both windows
                     if (input.KeyChar == action.GetKeybind("cancel"))
                     {
                         gui.CloseItemSelected();
                     }
-                    if(input.KeyChar == action.GetKeybind("sell"))
+                    // Visible on player window
+                    if(input.KeyChar == action.GetKeybind("sell") && gui.GetPlayerTradeSide())
                     {
                         SellSelectedItem();
                     }
-                    if(input.KeyChar == action.GetKeybind("buy"))
+                    // Visible on trader window
+                    if(input.KeyChar == action.GetKeybind("buy") && gui.GetTraderTradeSide())
                     {
                         BuySelectedItem();
                     }
                 }
 
                 // Exit
-                if(input.KeyChar == action.GetKeybind("exit"))
+                if (input.KeyChar == action.GetKeybind("exit") && !gui.GetItemSelectedState())
                 {
                     gui.CloseTradeWindow();
                 }
@@ -262,35 +287,57 @@ namespace con_rogue
 
         public void SelectedItemAction(Entity entity, ConsoleKeyInfo input)
         {
-            if (char.IsDigit(input.KeyChar))
-            {
-                itemChoice = 0;
-                itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
-
-                for (int i = 0; i < entity.GroupedInventory.Count; i++)
+            if(itemChoice >= 0 && itemChoice < entity.Inventory.Count) {
+                if (input.Key == ConsoleKey.Enter)
                 {
-                    if (itemChoice == i)
+                    gui.OpenItemSelected();
+                }
+                else if (char.IsDigit(input.KeyChar))
+                {
+                    itemChoice = 0;
+                    itemChoice = int.Parse(input.KeyChar.ToString()) - 1;
+
+                    for (int i = 0; i < entity.GroupedInventory.Count; i++)
                     {
-                        gui.OpenItemSelected();
+                        if (itemChoice == i)
+                        {
+                            gui.OpenItemSelected();
+                        }
                     }
                 }
             }
+
         }
 
         public void SellSelectedItem()
         {
-            var toSell = CurrentPlayer.Inventory[itemChoice];
-            CurrentPlayer.AddGold(toSell.Price);
-            CurrentLocation.TraderHere.AddItemToInventory(toSell);
-            CurrentPlayer.RemoveItemFromInventory(toSell);
+            if(itemChoice >= 0 && itemChoice < CurrentPlayer.Inventory.Count)
+            {
+                var toSell = CurrentPlayer.Inventory[itemChoice];
+                CurrentPlayer.AddGold(toSell.Price);
+                CurrentLocation.TraderHere.AddItemToInventory(toSell);
+                CurrentPlayer.RemoveItemFromInventory(toSell);
+            }
+            else
+            {
+                gui.CloseItemSelected();
+            }
         }
 
         public void BuySelectedItem()
         {
-            var toBuy = CurrentTrader.Inventory[itemChoice];
+            if (itemChoice < CurrentTrader.Inventory.Count)
+            {
+                var toBuy = CurrentTrader.Inventory[itemChoice];
 
-            CurrentPlayer.AddItemToInventory(toBuy);
-            CurrentLocation.TraderHere.RemoveItemFromInventory(toBuy);
+                CurrentPlayer.AddItemToInventory(toBuy);
+                CurrentLocation.TraderHere.RemoveItemFromInventory(toBuy);
+            }
+            else
+            {
+                gui.CloseItemSelected();
+            }
+
         }
 
         public void Attack()

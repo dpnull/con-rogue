@@ -48,7 +48,7 @@ namespace con_rogue
                 {
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine("{0}) {1}", index += 1, locations[i].Name);
+                    Console.Write("{0}) {1}", index += 1, locations[i].Name);
                 }
             }
             /*
@@ -56,7 +56,7 @@ namespace con_rogue
             {
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine(location.Name);                
+                Console.Write(location.Name);                
             }
             */
         }

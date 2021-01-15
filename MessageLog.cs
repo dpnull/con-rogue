@@ -50,7 +50,7 @@ namespace con_rogue
             for (int i = 0; i < lines.Length; i++)
             {
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine(lines[i]);
+                Console.Write(lines[i]);
                 y++;
             }
         }

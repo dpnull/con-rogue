@@ -101,62 +101,83 @@ namespace con_rogue
 
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"- {name} -");
+                Console.Write($"- {name} -");
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"\"{description}\"");
+                Console.Write($"\"{description}\"");
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"Value: {value}");
+                Console.Write($"Value: {value}");
                 if (isSelling)
                 {
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine($"{action.GetKeybind("sell")}) Sell");
+                    Console.Write($"{action.GetKeybind("sell")}) Sell");
                 } else
                 {
                     y++;
                     Console.SetCursorPosition(x, y);
-                    Console.WriteLine($"{action.GetKeybind("buy")}) Buy");
+                    Console.Write($"{action.GetKeybind("buy")}) Buy");
                 }
                 y++;
                 Console.SetCursorPosition(x, y);
-                Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
+                Console.Write($"{action.GetKeybind("cancel")}) Cancel");
             }
         }
 
-        public void PrintItems(int x, int y, int windowWidth, ConsoleColor color)
+        public void PrintItems(int x, int y, int windowWidth, ConsoleColor color, bool focused)
         {
             int index = 0;
             Console.ForegroundColor = color;
             Console.SetCursorPosition(x, y + 1);
-            Console.WriteLine("[[NAME]]                             [[PRICE]]");
+            Console.Write("[[NAME]]                             [[PRICE]]");
             y++;
-            foreach (GroupedInventoryItem item in GroupedInventory)
+
+            for(int i = 0; i < GroupedInventory.Count; i++)
             {
-                if (item.Item != null)
+                if (GroupedInventory[i].Item!=null)
                 {
-                    if (!item.Item.IsUnique)
+                    if (!GroupedInventory[i].Item.IsUnique)
                     {
                         index++;
                         y++;
                         Console.SetCursorPosition(x, y);
-                        Console.WriteLine($"{index}) {item.Item.Name} Quantity:{item.Quantity}");
+                        Console.Write($"{index}) {GroupedInventory[i].Item.Name} Quantity:{GroupedInventory[i].Quantity}");
                         Console.SetCursorPosition(x + windowWidth - 9, y);
-                        Console.WriteLine($"{item.Item.Price}");
+                        Console.Write($"{GroupedInventory[i].Item.Price}");
                     }
                     else
                     {
                         index++;
                         y++;
                         Console.SetCursorPosition(x, y);
-                        Console.WriteLine($"{index}) {item.Item.Name}");
+                        Console.Write($"{index}) {GroupedInventory[i].Item.Name}");
                         Console.SetCursorPosition(x + windowWidth - 9, y);
-                        Console.WriteLine($"{item.Item.Price}");
+                        Console.Write($"{GroupedInventory[i].Item.Price}");
+                    }
+                    // Very messy, needs to be redone
+                    if(GameSession.itemChoice >= 0 && GameSession.itemChoice < Inventory.Count)
+                    {
+                        if (Inventory[GameSession.itemChoice] == Inventory[i] && focused)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.SetCursorPosition(x, y);
+
+                            if (!GroupedInventory[i].Item.IsUnique)
+                            {
+                                Console.Write($"{index}) {GroupedInventory[i].Item.Name} Quantity:{GroupedInventory[i].Quantity}");
+                            }
+                            else
+                            {
+                                Console.Write($"{index}) {GroupedInventory[i].Item.Name}");
+                            }
+                            Console.SetCursorPosition(x + windowWidth - 9, y);
+                            Console.Write($"{GroupedInventory[i].Item.Price}");
+                            Console.ForegroundColor = color;
+                        }
                     }
                 }
             }
-
             Console.ForegroundColor = ConsoleColor.White;
         }
 
