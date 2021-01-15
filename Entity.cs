@@ -97,6 +97,7 @@ namespace con_rogue
             {
                 string name = GroupedInventory[GameSession.itemChoice].Item.Name;
                 string description = GroupedInventory[GameSession.itemChoice].Item.Description;
+                int value = GroupedInventory[GameSession.itemChoice].Item.Price;
 
                 y++;
                 Console.SetCursorPosition(x, y);
@@ -104,6 +105,9 @@ namespace con_rogue
                 y++;
                 Console.SetCursorPosition(x, y);
                 Console.WriteLine($"\"{description}\"");
+                y++;
+                Console.SetCursorPosition(x, y);
+                Console.WriteLine($"Value: {value}");
                 if (isSelling)
                 {
                     y++;
@@ -126,7 +130,7 @@ namespace con_rogue
             int index = 0;
             Console.ForegroundColor = color;
             Console.SetCursorPosition(x, y + 1);
-            Console.WriteLine("[[NAME]]                                 [[PRICE]]");
+            Console.WriteLine("[[NAME]]                             [[PRICE]]");
             y++;
             foreach (GroupedInventoryItem item in GroupedInventory)
             {

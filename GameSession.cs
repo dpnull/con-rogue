@@ -179,56 +179,64 @@ namespace con_rogue
                 SelectedItemAction(CurrentPlayer, input);
             }
 
-            // Open Travel Menu
-            if (input.KeyChar == action.GetKeybind("travel") && CAN_TRAVEL)
+            if (CAN_TRAVEL)
             {
-                gui.OpenTravelWindow();
-            }
-            // Close Travel Menu
-            if (input.KeyChar == action.GetKeybind("exit") && CAN_TRAVEL)
-            {
-                gui.CloseTravelWindow();
-            }
-            // Commence X Travel
-            if (char.IsDigit(input.KeyChar) && gui.GetTravelWindowState()) // GetTravelWindow state shouldn't be here
-            if (char.IsDigit(input.KeyChar) && CAN_TRAVEL)
-            {
-                int choice = 0;
-                choice = int.Parse(input.KeyChar.ToString()) - 1;
-                for (int i = 0; i < CurrentWorld.locations.Count; i++)
+                // Open Travel Menu
+                if (input.KeyChar == action.GetKeybind("travel"))
                 {
-                    if (choice == CurrentWorld.locations[i].X && CurrentWorld.locations[i].Y == 0)
+                    gui.OpenTravelWindow();
+                }
+                // Close Travel Menu
+                if (input.KeyChar == action.GetKeybind("exit"))
+                {
+                    gui.CloseTravelWindow();
+                }
+                // Commence X Travel
+                if (char.IsDigit(input.KeyChar) && gui.GetTravelWindowState()) // GetTravelWindow state shouldn't be here
+                    if (char.IsDigit(input.KeyChar))
                     {
-                        CurrentLocation = CurrentWorld.GetLocation(choice, 0);
-                        messageLog.Add($"Travelling to {CurrentWorld.GetLocation(choice, 0).Name}...");
-                        gui.CloseTravelWindow();
+                        int choice = 0;
+                        choice = int.Parse(input.KeyChar.ToString()) - 1;
+                        for (int i = 0; i < CurrentWorld.locations.Count; i++)
+                        {
+                            if (choice == CurrentWorld.locations[i].X && CurrentWorld.locations[i].Y == 0)
+                            {
+                                CurrentLocation = CurrentWorld.GetLocation(choice, 0);
+                                messageLog.Add($"Travelling to {CurrentWorld.GetLocation(choice, 0).Name}...");
+                                gui.CloseTravelWindow();
+                            }
+                        }
+
+                    }
+            }
+
+
+            // Location specific 
+            if (CAN_TRAVEL)
+            {
+                if (CurrentLocation.X == 1)
+                {
+                    if (input.KeyChar == action.GetKeybind("blacksmith") && action.GetActionState("blacksmith"))
+                    {
+                        CurrentLocation = CurrentWorld.GetLocation(1, 1);
+                    }
+                    if (input.KeyChar == action.GetKeybind("market") && action.GetActionState("market"))
+                    {
+                        CurrentLocation = CurrentWorld.GetLocation(1, 2);
                     }
                 }
 
-            }
-
-            // Location specific 
-            if (CurrentLocation.X == 1)
-            {
-                if (input.KeyChar == action.GetKeybind("blacksmith") && action.GetActionState("blacksmith"))
+                if (CurrentLocation.X == 2)
                 {
-                    CurrentLocation = CurrentWorld.GetLocation(1, 1);
-                }
-                if (input.KeyChar == action.GetKeybind("market") && action.GetActionState("market"))
-                {
-                    CurrentLocation = CurrentWorld.GetLocation(1, 2);
+                    if (input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt") && InCombat != true)
+                    {
+                        GetEnemyAtLocation();
+                        gui.OpenBattleWindow();
+                        InCombat = true;
+                    }
                 }
             }
 
-            if (CurrentLocation.X == 2)
-            {
-                if (input.KeyChar == action.GetKeybind("hunt") && action.GetActionState("hunt") && InCombat != true)
-                {
-                    GetEnemyAtLocation();
-                    gui.OpenBattleWindow();
-                    InCombat = true;
-                }
-            }
 
             // Battle system
             if (InCombat)

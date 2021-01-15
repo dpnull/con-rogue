@@ -286,6 +286,7 @@ namespace con_rogue
                 int ypos = 0;
                 DrawBox(x, y, Width / 2, Height / 2 - 4, "PLAYER", true, true);
                 DrawBox(Width / 2, y, Width / 2, Height / 2 - 4, "TRADER", true, true);
+                player.PrintCurrentGold(2, Height / 2 - 6, ConsoleColor.Yellow);
                 // Default selection should always be player trade side
                 if (traderTradeSide)
                 {
@@ -293,7 +294,7 @@ namespace con_rogue
                     player.PrintItems(2, y, Width / 2, ConsoleColor.White);
 
                     // Lazy if condition, needs to be improved. itemSelected should check for both automatically.
-                    if (itemSelected && GameSession.itemChoice < player.GroupedInventory.Count)
+                    if (itemSelected && GameSession.itemChoice < trader.GroupedInventory.Count)
                     {
                         DrawBox(0, Height / 2 - 4, Width / 2, 7, null, false, false);
                         trader.PrintItemSellOptions(1, Height / 2 - 4, action, false);
@@ -313,6 +314,7 @@ namespace con_rogue
 
             }      
         }
+
 
         public bool GetBattleWindowState()
         {

@@ -138,6 +138,13 @@ namespace con_rogue
             Console.WriteLine($"{action.GetKeybind("cancel")}) Cancel");
         }
 
+        public void PrintCurrentGold(int x, int y, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.SetCursorPosition(x, y);
+            Console.WriteLine($"Gold: {Gold}");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
 
     }
 }
