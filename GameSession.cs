@@ -31,12 +31,11 @@ namespace con_rogue
 
         public Action action { get; set; }
         public Action battleAction { get; set; }
-
         public Enemy CurrentEnemy { get; set; }
 
         public static Trader CurrentTrader { get; set; }
 
-        public MessageLog messageLog { get; set; }
+        public static MessageLog messageLog { get; set; }
 
         public bool HasEnemy => CurrentEnemy != null;
         public static bool HasTrader => CurrentTrader != null;
@@ -81,7 +80,7 @@ namespace con_rogue
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(2003));
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateItem(1001));
 
-            CurrentPlayer.CurrentWeapon = ItemFactory.CreateItem(2001);
+            CurrentPlayer.CurrentWeapon = CurrentPlayer.Inventory.Where(i => i.Type == Item.ItemType.Weapon).FirstOrDefault();
         }
 
         public void Update(ConsoleKeyInfo input)
@@ -190,10 +189,13 @@ namespace con_rogue
                     // Equip selected weapon
                     if (input.KeyChar == action.GetKeybind("equip"))
                     {
-                        // Filter and order every weapon type item
-                        List<Item> filteredList = CurrentPlayer.Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
-                        CurrentPlayer.CurrentWeapon = filteredList[itemChoice];
+                        EquipWeapon();
                         gui.CloseItemSelected();
+                    }
+                    // Remove item from inventory
+                    if(input.KeyChar == action.GetKeybind("drop"))
+                    {
+                        DropItem();
                     }
                     // Close specific item option menu
                     if (input.KeyChar == action.GetKeybind("cancel"))
@@ -268,7 +270,9 @@ namespace con_rogue
             {
                 if (input.KeyChar == battleAction.GetKeybind("attack") && battleAction.GetActionState("attack") && CurrentEnemy.Health > 0)
                 {
-                    Attack();
+                    CurrentPlayer.UseCurrentWeaponOn(CurrentEnemy);
+                    CurrentEnemy.UseCurrentWeaponOn(CurrentPlayer);
+                    KillReward();
                 }
                 if (input.KeyChar == action.GetKeybind("exit") && CurrentEnemy.Health <= 0)
                 {
@@ -309,6 +313,23 @@ namespace con_rogue
 
         }
 
+        public void EquipWeapon()
+        {
+            // Filter and order every weapon type item
+            List<Item> filteredList = CurrentPlayer.Inventory.Where(x => x.Type == Item.ItemType.Weapon).ToList();
+            CurrentPlayer.CurrentWeapon = filteredList[itemChoice];
+        }
+
+        public void DropItem()
+        {
+            if (itemChoice >= 0 && itemChoice < CurrentPlayer.Inventory.Count)
+            {
+                var toDrop = CurrentPlayer.Inventory[itemChoice];
+                CurrentPlayer.RemoveItemFromInventory(toDrop);
+            }
+               
+        }
+
         public void SellSelectedItem()
         {
             if(itemChoice >= 0 && itemChoice < CurrentPlayer.Inventory.Count)
@@ -326,12 +347,19 @@ namespace con_rogue
 
         public void BuySelectedItem()
         {
-            if (itemChoice < CurrentTrader.Inventory.Count)
+            if (itemChoice <= CurrentTrader.Inventory.Count)
             {
                 var toBuy = CurrentTrader.Inventory[itemChoice];
 
-                CurrentPlayer.AddItemToInventory(toBuy);
-                CurrentLocation.TraderHere.RemoveItemFromInventory(toBuy);
+                if(CurrentPlayer.Gold < toBuy.Price)
+                {
+                    messageLog.Add($"You don't have enough gold to buy {toBuy.Name}!");
+                }
+                else
+                {
+                    CurrentPlayer.AddItemToInventory(toBuy);
+                    CurrentLocation.TraderHere.RemoveItemFromInventory(toBuy);
+                }
             }
             else
             {
@@ -342,69 +370,24 @@ namespace con_rogue
 
         public void Attack()
         {
-            if (CurrentPlayer.CurrentWeapon == null)
-            {
-                messageLog.Add("You must wield a weapon to attack!");
-                return;
-            }
 
-            // If player has a weapon, get raw damage to enemy
-            int damageDealt = RNG.Generator(CurrentPlayer.CurrentWeapon.MinDmg, CurrentPlayer.CurrentWeapon.MaxDmg);
-
-            if (damageDealt == 0)
-            {
-                messageLog.Add("You have missed " + CurrentEnemy.Name + " !");
-
-            }
-            else
-            {
-                CurrentEnemy.TakeDamage(damageDealt);
-                messageLog.Add("You hit " + CurrentEnemy.Name + " for " + damageDealt + " damage!");
-            }
-
-            if (CurrentEnemy.Health <= 0)
-            {
-                KillReward();
-                CurrentEnemy.SetHealth(0);
-            }
-            else
-            {
-                Defend();
-            }
         }
 
         public void KillReward()
         {
-            messageLog.Add("You have defeated " + CurrentEnemy.Name + " !");
-            messageLog.Add("You gain " + CurrentEnemy.RewardExp + " experienece");
-            messageLog.Add("You gain " + CurrentEnemy.Gold + " gold");
-            messageLog.Add("Press [x] to exit...");
-            foreach (Item item in CurrentEnemy.Inventory)
+            if(CurrentEnemy.Health <= 0)
             {
-                CurrentPlayer.AddItemToInventory(item);
-                messageLog.Add("You obtain " + item.Name);
-            }
-            CurrentPlayer.Experience += CurrentEnemy.RewardExp;
-            CurrentPlayer.AddGold(CurrentEnemy.Gold);
-        }
-
-        public void Defend()
-        {
-            int damageReceived = RNG.Generator(CurrentEnemy.MinDmg, CurrentEnemy.MaxDmg);
-
-            if (damageReceived == 0)
-            {
-                messageLog.Add(CurrentEnemy.Name + " misses!");
-            }
-            else
-            {
-                CurrentPlayer.TakeDamage(damageReceived);
-                messageLog.Add(CurrentEnemy.Name + " hits you for " + damageReceived + " damage!");
-            }
-
-            if (CurrentPlayer.Health <= 0)
-            {
-                Death();
+                messageLog.Add($"You defeat {CurrentEnemy.Name.ToLower()}");
+                messageLog.Add("You gain " + CurrentEnemy.RewardExp + " experienece");
+                messageLog.Add("You gain " + CurrentEnemy.Gold + " gold");
+                messageLog.Add("Press [x] to exit...");
+                foreach (Item item in CurrentEnemy.Inventory)
+                {
+                    CurrentPlayer.AddItemToInventory(item);
+                    messageLog.Add("You obtain " + item.Name);
+                }
+                CurrentPlayer.Experience += CurrentEnemy.RewardExp;
+                CurrentPlayer.AddGold(CurrentEnemy.Gold);
             }
         }
 
@@ -482,3 +465,18 @@ namespace con_rogue
         }
     }
 }
+
+/*
+[ Character Info / Health / Weapon ] [ ACTIONS ]
+[
+
+
+
+
+
+
+
+
+
+
+*/

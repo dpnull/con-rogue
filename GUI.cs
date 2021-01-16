@@ -74,7 +74,7 @@ namespace con_rogue
             if (!gameSession.InCombat)
             {
                 // Message Log and Actions should always be on
-                DrawMessageLog(gameSession.messageLog, 0, Height - 10, Width - 30, 8);
+                DrawMessageLog(GameSession.messageLog, 0, Height - 10, Width - 30, 8);
 
                 // Auto hiding of actions and drawing them onto the screen (Perhaps should be called from within actionmanagement)
                 ActionManagement(gameSession.action, gameSession.CurrentLocation);
@@ -102,7 +102,7 @@ namespace con_rogue
                 battleVisibility = true;
                 BattleActionManagement(gameSession.battleAction);
                 DrawBattleWindow(gameSession.battleAction, gameSession.CurrentPlayer, gameSession.CurrentEnemy, battleVisibility);
-                DrawMessageLog(gameSession.messageLog, 0, Height - 10, Width, 8);
+                DrawMessageLog(GameSession.messageLog, 0, Height - 10, Width, 8);
             }
         }
 
@@ -273,7 +273,7 @@ namespace con_rogue
                 DrawBox(xpos + 1, ypos + 1, Width / 2 - 9, (Height / 2) - 2, "PLAYER", false, true);
                 player.PrintBattleStats((Width / 8), (Height / 4) - 1);
                 DrawBox((Width / 2) + 8, ypos + 1, Width / 2 - 9, (Height / 2) - 2, "ENEMY", false, true);
-                enemy.PrintBattleStats(Width - (Width / 4) - 7, (Height / 4) - 1);
+                enemy.PrintBattleStats(Width - (Width / 4) - 7, (Height / 4) - 1, 20);
                 action.PrintActions(Width / 2 - 5, 2);
             }
         }

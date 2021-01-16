@@ -11,7 +11,6 @@ namespace con_rogue
         public int Experience { get; set; }
         public int Level { get; set; }
         public List<QuestStatus> Quests { get; set; }
-        public Item CurrentWeapon { get; set; }
 
         public Player(string name, int maxHealth, int health, int experience, int level, int gold) :
             base(name, maxHealth, health, gold)

@@ -12,6 +12,7 @@ namespace con_rogue
         private int _maxHealth;
         private int _health;
         private int _gold;
+        private Item _currentWeapon;
 
         public string Name
         {
@@ -34,6 +35,15 @@ namespace con_rogue
             private set { _gold = value; }
         }
 
+        public Item CurrentWeapon
+        {
+            get { return _currentWeapon; }
+            set
+            {
+                _currentWeapon = value;
+            }
+        }
+
         public bool IsDead => Health <= 0;
 
         public List<Item> Inventory { get; set; }
@@ -52,6 +62,11 @@ namespace con_rogue
             Gold = gold;
             Inventory = new List<Item>();
             GroupedInventory = new List<GroupedInventoryItem>();
+        }
+
+        public void UseCurrentWeaponOn(Entity target)
+        {
+            CurrentWeapon.PerformAttack(this, target);
         }
 
         public void TakeDamage(int d)
@@ -227,6 +242,8 @@ namespace con_rogue
                 }
             }
         }
+
+
 
     }
 }

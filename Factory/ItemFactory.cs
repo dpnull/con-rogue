@@ -16,10 +16,14 @@ namespace con_rogue.Factory
             NewMisc(1002, "Spider Eye", "Used for its properties when brewed.", 8);
             NewMisc(1003, "Boar skin", "Local standard for clothes quality.", 10);
 
-            NewWeapon(2001, "Training Stick", "Not much value in a fight.", 5, 3, 7);
-            NewWeapon(2002, "Copper Broadsword", "An apprenticeship's craft.", 10, 7, 10);
-            NewWeapon(2003, "Copper Longsword", "An apprenticeship's craft.", 10, 5, 12);
-            NewWeapon(2004, "Iron Longsword", "Poor king's knight's weapon.", 25, 9, 16);
+            CreateWeapon(2001, "Training Stick", "Not much value in a fight.", 5, 3, 7);
+            CreateWeapon(2002, "Copper Broadsword", "An apprenticeship's craft.", 10, 7, 10);
+            CreateWeapon(2003, "Copper Longsword", "An apprenticeship's craft.", 10, 5, 12);
+            CreateWeapon(2004, "Iron Longsword", "Poor king's knight's weapon.", 25, 9, 16);
+
+            CreateWeapon(2501, "Spider Attack", "", 0, 5, 15);
+            CreateWeapon(2502, "Boar Attack", "", 0, 5, 10);
+            
 
         }
 
@@ -33,9 +37,14 @@ namespace con_rogue.Factory
             _standardItems.Add(new Item(Item.ItemType.Miscellaneous, id, name, description, price));
         }
 
-        public static void NewWeapon(int id, string name, string description, int price, int minDmg, int maxDmg)
+        // Below function is not a good practice (placeholder currently)
+        // Composition over inheritance
+        public static void CreateWeapon(int id, string name, string description, int price, int minDmg, int maxDmg)
         {
-            _standardItems.Add(new Item(Item.ItemType.Weapon, id, name, description, price, true, minDmg, maxDmg));
+            Item weapon = new Item(Item.ItemType.Weapon, id, name, description, price, true, minDmg, maxDmg);
+            weapon.Action = new AttackWithWeapon(weapon, minDmg, maxDmg);
+            _standardItems.Add(weapon);
+            
         }
     }
 }

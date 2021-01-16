@@ -14,11 +14,11 @@ namespace con_rogue.Factory
             List<ItemBundle> itemsToComplete = new List<ItemBundle>();
             List<ItemBundle> rewardItems = new List<ItemBundle>();
 
-            itemsToComplete.Add(new ItemBundle(1001, 1));
+            itemsToComplete.Add(new ItemBundle(1001, 3));
             rewardItems.Add(new ItemBundle(2003, 1));
 
             // Create the quest
-            _quests.Add(new Quest(1, "Spider Trouble", "Obtain 1 spider silk", itemsToComplete, 20, 10, rewardItems));
+            _quests.Add(new Quest(1, "Spider Trouble", "Obtain 3 spider silk", itemsToComplete, 20, 10, rewardItems));
         }
 
         // Get the first matching quest by passed ID

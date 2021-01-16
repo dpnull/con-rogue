@@ -6,29 +6,45 @@ namespace con_rogue
 {
     public class Enemy : Entity
     {
-        public int MinDmg { get; set; }
-        public int MaxDmg { get; set; }
         public int RewardExp { get; set; }
 
-        public Enemy(string name, int maxHealth, int health, int minDmg, int maxDmg, int rewardExp, int rewardGold) :
+        public Enemy(string name, int maxHealth, int health, int rewardExp, int rewardGold) :
             base(name, maxHealth, health, rewardGold)
         {
-            MinDmg = minDmg;
-            MaxDmg = maxDmg;
             RewardExp = rewardExp;
         }
 
-        public void PrintBattleStats(int x, int y)
+        public void PrintBattleStats(int x, int y, int width)
         {
-            int damage = (MinDmg + MaxDmg) / 2;
+            // [==========]
+            // [========  ]
+
+            string bar = "[";
+
+            double percent = (double)Health / MaxHealth;
+            int complete = Convert.ToInt32(percent * width);
+            int incomplete = width - complete;
+
+
+
+
+            for(int i = 0; i < complete; i++)
+            {
+                bar += "=";
+            }
+
+            for (int i = complete; i < width; i++)
+            {
+                bar += "-";
+            }
+
+            bar += "]";
+
             Console.SetCursorPosition(x, y);
-            Console.Write($"NAME:       {Name}");
+            Console.Write($"-------- {Name} --------");
             y++;
             Console.SetCursorPosition(x, y);
-            Console.Write($"HEALTH:     {Health}");
-            y++;
-            Console.SetCursorPosition(x, y);
-            Console.Write($"DAMAGE:     {damage}");
+            Console.Write(bar);
         }
 
         public void DrawEnemy(int x, int y)

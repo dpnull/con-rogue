@@ -12,7 +12,9 @@ namespace con_rogue.Factory
             switch (enemyID)
             {
                 case 1:
-                    Enemy spider = new Enemy("Spider", 30, 30, 5, 10, RNG.Generator(3, 6), RNG.Generator(5, 8));
+                    Enemy spider = new Enemy("Spider", 30, 30, 5, 10);
+
+                    AttackWeapon(spider, 2501);
 
                     AddLootItem(spider, 1001, 50);
                     AddLootItem(spider, 1002, 50);
@@ -20,7 +22,9 @@ namespace con_rogue.Factory
                     return spider;
 
                 case 2:
-                    Enemy boar = new Enemy("Boar", 50, 50, 3, 6, RNG.Generator(2, 7), RNG.Generator(4, 9));
+                    Enemy boar = new Enemy("Boar", 50, 50, 3, 6);
+
+                    AttackWeapon(boar, 2502);
 
                     AddLootItem(boar, 1003, 100);
 
@@ -40,6 +44,11 @@ namespace con_rogue.Factory
             {
                 enemy.AddItemToInventory(ItemFactory.CreateItem(itemID));
             }
+        }
+
+        private static void AttackWeapon(Enemy enemy, int id)
+        {
+            enemy.CurrentWeapon = ItemFactory.CreateItem(id);
         }
     }
 
